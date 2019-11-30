@@ -2,7 +2,7 @@ import sys
 
 SIDE_LENGTH = 1000
 
-def add_claim(fabric, claim, claims):
+def add_claim(fabric: list, claim: str, claims: dict):
   claim = claim.strip().split()
   
   claim_id = int(claim[0][1:])
