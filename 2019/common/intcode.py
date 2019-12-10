@@ -8,6 +8,7 @@ class Computer:
 
     self.pc = 0
     self.relative_base = 0
+    self.halted = False
     
     self.in_values = []
     self.out_values = []
@@ -71,4 +72,5 @@ class Computer:
         self.relative_base += self.get_param(1)
         self.pc += 2
       elif opcode == 99:
-        break
+        self.halted = True
+        return
