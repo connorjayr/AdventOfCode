@@ -1,7 +1,7 @@
 import typing
 
 def solve(input_file: typing.IO) -> typing.Generator[str, None, None]:
-  # data = [line for line in input_file if line]
+  # data = [line.strip() for line in input_file if line]
   yield 'Solution not implemented'
 
 def main() -> None:
