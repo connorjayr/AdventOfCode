@@ -1,3 +1,8 @@
+import collections
+import functools
+import itertools
+import operator
+import re
 import typing
 
 def two_sum_product(nums_list: list) -> int:

@@ -1,3 +1,8 @@
+import collections
+import functools
+import itertools
+import operator
+import re
 import typing
 
 def solve(input_file: typing.IO) -> typing.Generator[str, None, None]:

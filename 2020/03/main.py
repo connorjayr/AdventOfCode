@@ -1,5 +1,8 @@
+import collections
 import functools
+import itertools
 import operator
+import re
 import typing
 
 def count_trees(tree_map: list, step: tuple) -> int:

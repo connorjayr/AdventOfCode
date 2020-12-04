@@ -1,3 +1,8 @@
+import collections
+import functools
+import itertools
+import operator
+import re
 import typing
 
 def is_valid_with_old_policy(line: str) -> bool:
