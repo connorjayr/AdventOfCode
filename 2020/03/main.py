@@ -3,8 +3,16 @@ import operator
 import typing
 
 def count_trees(tree_map: list, step: tuple) -> int:
+  """Counts the number of trees that the toboggan would encouter when starting
+  at a given position and moving by a fixed step vector.
+
+  Arguments:
+  tree_map -- the two-dimensional map indicating where trees are
+  step -- the vector indicating the toboggan's movement
+  """
   trees = 0
-  pos = (0, 0)
+  # Ignore (0, 0)
+  pos = step
   # Iterate until we reach the bottom row
   while pos[1] < len(tree_map):
     if tree_map[pos[1]][pos[0]] == '#':
