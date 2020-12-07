@@ -2,6 +2,7 @@ from ..util.inputs import *
 import collections
 import functools
 import itertools
+import networkx as nx
 import operator
 import os
 import re
