@@ -9,15 +9,16 @@ import importlib
 import os
 import requests
 import sys
+from typing import Optional
 
 
-def retrieve_input(day: int, year: int) -> str:
+def retrieve_input(day: int, year: int) -> Optional[str]:
     url = f"https://adventofcode.com/{year}/day/{day}/input"
     session = os.getenv("ADVENT_OF_CODE_SESSION")
     response = requests.get(url, cookies={"session": session})
     if response.status_code != 200:
         print(f"cannot retrieve input from {url}", file=sys.stderr)
-        exit(1)
+        return None
     return response.text
 
 

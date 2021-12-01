@@ -1,6 +1,6 @@
-from typing import Generator
+from typing import Generator, Optional
 
 
-def solve(input: str) -> Generator[any, None, None]:
+def solve(input: Optional[str]) -> Generator[any, None, None]:
     yield "Part 1 solution"
     yield "Part 2 solution"
