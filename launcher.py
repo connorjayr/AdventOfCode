@@ -24,8 +24,28 @@ def retrieve_input(day: int, year: int) -> Optional[str]:
 
 def main():
     parser = argparse.ArgumentParser(description="Solves an Advent of Code puzzle.")
-    parser.add_argument("--day", "-d", default=datetime.date.today().day, type=int)
-    parser.add_argument("--year", "-y", default=datetime.date.today().year, type=int)
+    parser.add_argument(
+        "--day",
+        "-d",
+        default=datetime.date.today().day,
+        help="which day the puzzle is from",
+        type=int,
+    )
+    parser.add_argument(
+        "--year",
+        "-y",
+        default=datetime.date.today().year,
+        help="which year the puzzle is from",
+        type=int,
+    )
+    parser.add_argument(
+        "--part",
+        "-p",
+        action="append",
+        choices=[1, 2],
+        help="which part(s) to solve",
+        type=int,
+    )
     args = parser.parse_args()
 
     try:
@@ -35,9 +55,13 @@ def main():
         print(f"No solver for day {args.day}")
         exit(1)
 
-    for solution in solver.solve(retrieve_input(args.day, args.year)):
-        print(solution)
-        clipboard.copy(solution)
+    parts = set(args.part or [])
+    for (part, solution) in enumerate(
+        solver.solve(retrieve_input(args.day, args.year)), 1
+    ):
+        if len(parts) == 0 or part in parts:
+            print(f"Part {part} solution: {solution}")
+            clipboard.copy(solution)
 
 
 if __name__ == "__main__":
