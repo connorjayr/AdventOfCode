@@ -64,6 +64,9 @@ def main():
         type=int,
     )
     parser.add_argument(
+        "--input", "-i", help="path to the puzzle input", type=argparse.FileType("r")
+    )
+    parser.add_argument(
         "--part",
         "-p",
         action="append",
@@ -81,9 +84,10 @@ def main():
         exit(1)
 
     parts = set(args.part or [])
-    for (part, solution) in enumerate(
-        solver.solve(retrieve_input(args.day, args.year)), 1
-    ):
+    input = (
+        retrieve_input(args.day, args.year) if args.input is None else args.input.read()
+    )
+    for (part, solution) in enumerate(solver.solve(input), 1):
         if len(parts) == 0 or part in parts:
             print(f"Part {part} solution: {solution}")
             clipboard.copy(solution)
