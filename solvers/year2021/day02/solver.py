@@ -6,7 +6,7 @@ def solve(input: Optional[str]) -> Generator[any, None, None]:
     dist = 0
     depth = 0
     for line in input.split("\n"):
-        command, value = line.split()
+        command, value = line.split(" ")
         value = int(value)
         if command == "forward":
             dist += value
@@ -22,7 +22,7 @@ def solve(input: Optional[str]) -> Generator[any, None, None]:
     depth = 0
     aim = 0
     for line in input.split("\n"):
-        command, value = line.split()
+        command, value = line.split(" ")
         value = int(value)
         if command == "forward":
             dist += value
