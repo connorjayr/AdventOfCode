@@ -1,31 +1,31 @@
 from typing import Generator, Optional
-from util.errors import InputError
+from util import *
 
 
 def solve(input: Optional[str]) -> Generator[any, None, None]:
-    distance = 0
+    dist = 0
     depth = 0
     for line in input.split("\n"):
         command, value = line.split()
         value = int(value)
         if command == "forward":
-            distance += value
+            dist += value
         elif command == "down":
             depth += value
         elif command == "up":
             depth -= value
         else:
-            raise InputError(f'unknown command "{command}"')
-    yield distance * depth
+            raise errors.InputError(f'unknown command "{command}"')
+    yield dist * depth
 
-    distance = 0
+    dist = 0
     depth = 0
     aim = 0
     for line in input.split("\n"):
         command, value = line.split()
         value = int(value)
         if command == "forward":
-            distance += value
+            dist += value
             depth += aim * value
         elif command == "down":
             aim += value
@@ -33,4 +33,4 @@ def solve(input: Optional[str]) -> Generator[any, None, None]:
             aim -= value
         else:
             raise InputError(f'unknown command "{command}"')
-    yield distance * depth
+    yield dist * depth

@@ -16,8 +16,8 @@ def retrieve_input(day: int, year: int) -> Optional[str]:
     """Retrieves a puzzle's input from https://adventofcode.com.
 
     Args:
-        day: Which day the puzzle is from
-        year: Which year the puzzle is from
+        day: Which day the puzzle is from.
+        year: Which year the puzzle is from.
 
     Returns:
         The puzzle input.
