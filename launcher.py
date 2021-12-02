@@ -13,6 +13,15 @@ from typing import Optional
 
 
 def retrieve_input(day: int, year: int) -> Optional[str]:
+    """Retrieves a puzzle's input from https://adventofcode.com.
+
+    Args:
+        day: Which day the puzzle is from
+        year: Which year the puzzle is from
+
+    Returns:
+        The puzzle input.
+    """
     url = f"https://adventofcode.com/{year}/day/{day}/input"
     session = os.getenv("ADVENT_OF_CODE_SESSION")
     response = requests.get(url, cookies={"session": session})
