@@ -7,6 +7,7 @@ import clipboard
 import datetime
 import importlib
 import os
+import pathlib
 import requests
 import sys
 from typing import Optional
@@ -22,13 +23,28 @@ def retrieve_input(day: int, year: int) -> Optional[str]:
     Returns:
         The puzzle input.
     """
+    # If the puzzle input has previously been retrieved, then read it from the
+    # file
+    input_path = pathlib.Path(f"inputs/year{year}/day{day}.txt")
+    if input_path.exists():
+        with open(input_path, "r") as input_file:
+            return input_file.read()
+
+    # Retrieve the puzzle input from https://adventofcode.com
     url = f"https://adventofcode.com/{year}/day/{day}/input"
     session = os.getenv("ADVENT_OF_CODE_SESSION")
     response = requests.get(url, cookies={"session": session})
     if response.status_code != 200:
         print(f"cannot retrieve input from {url}", file=sys.stderr)
         return None
-    return response.text.strip()
+    input = response.text.strip()
+
+    # Save the puzzle input to a file
+    input_path.parent.mkdir(parents=True, exist_ok=True)
+    with open(input_path, "w") as input_file:
+        input_file.write(input)
+
+    return input
 
 
 def main():
