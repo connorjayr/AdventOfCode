@@ -19,7 +19,7 @@ def retrieve_input(day: int, year: int) -> Optional[str]:
     if response.status_code != 200:
         print(f"cannot retrieve input from {url}", file=sys.stderr)
         return None
-    return response.text
+    return response.text.strip()
 
 
 def main():
