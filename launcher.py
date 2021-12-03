@@ -25,7 +25,7 @@ def retrieve_input(day: int, year: int) -> Optional[str]:
     """
     # If the puzzle input has previously been retrieved, then read it from the
     # file
-    input_path = pathlib.Path(f"inputs/year{year}/day{day}.txt")
+    input_path = pathlib.Path(f"inputs/year{year}/day{str(day).rjust(2, '0')}.txt")
     if input_path.exists():
         with open(input_path, "r") as input_file:
             return input_file.read()
