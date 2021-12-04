@@ -41,10 +41,10 @@ def solve(input: Optional[str]) -> Generator[any, None, None]:
             width, height = (int(dim) for dim in match.groups())
             screen.rect(width, height)
         elif match := re.fullmatch(r"rotate column x=(\d+) by (\d+)", operation):
-            col, amount = map(int, match.groups())
+            col, amount = (int(n) for n in match.groups())
             screen.rotate_column(col, amount)
         elif match := re.fullmatch(r"rotate row y=(\d+) by (\d+)", operation):
-            row, amount = map(int, match.groups())
+            row, amount = (int(n) for n in match.groups())
             screen.rotate_row(row, amount)
     yield sum(row.count("*") for row in screen.pixels)
 

@@ -7,7 +7,7 @@ def decompress_v1(s: str) -> int:
     idx = 0
     while idx < len(s):
         if match := re.match(r"\((\d+)x(\d+)\)", s[idx:]):
-            chars, repeat = map(int, match.groups())
+            chars, repeat = (int(n) for n in match.groups())
             s = (
                 s[:idx]
                 + s[idx + match.end() : idx + match.end() + chars] * repeat
@@ -24,7 +24,7 @@ def decompress_v2(s: str) -> int:
     length = 0
     while idx < len(s):
         if match := re.match(r"\((\d+)x(\d+)\)", s[idx:]):
-            chars, repeat = map(int, match.groups())
+            chars, repeat = (int(n) for n in match.groups())
             length += (
                 decompress_v2(s[idx + match.end() : idx + match.end() + chars]) * repeat
             )
