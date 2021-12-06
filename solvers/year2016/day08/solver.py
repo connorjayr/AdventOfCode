@@ -1,10 +1,10 @@
 import re
-from typing import Generator, List, Optional
+from typing import Iterator, Optional
 from util import *
 
 
 class Screen:
-    pixels: List[List[str]]
+    pixels: list[list[str]]
 
     def __init__(self):
         self.pixels = [["."] * 50] * 6
@@ -34,7 +34,7 @@ class Screen:
         self.pixels[row] = self.pixels[row][idx:] + self.pixels[row][:idx]
 
 
-def solve(input: Optional[str]) -> Generator[any, None, None]:
+def solve(input: Optional[str]) -> Iterator[any]:
     screen = Screen()
     for operation in input.split("\n"):
         if match := re.fullmatch(r"rect (\d+)x(\d+)", operation):

@@ -1,11 +1,10 @@
-from collections import Counter
-from typing import Generator, Optional
+from typing import Counter, Iterator, Optional
 from util import *
 
 
-def solve(input: Optional[str]) -> Generator[any, None, None]:
+def solve(input: Optional[str]) -> Iterator[any]:
     initial_timers = [int(timer) for timer in input.split(",")]
-    fish = Counter(initial_timers)
+    fish = Counter[int](initial_timers)
 
     day = 0
     while day < 256:

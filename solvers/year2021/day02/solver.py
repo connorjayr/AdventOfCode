@@ -1,8 +1,8 @@
-from typing import Generator, Optional
+from typing import Iterator, Optional
 from util import *
 
 
-def solve(input: Optional[str]) -> Generator[any, None, None]:
+def solve(input: Optional[str]) -> Iterator[any]:
     dist = 0
     depth = 0
     for line in input.split("\n"):

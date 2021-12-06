@@ -1,7 +1,7 @@
-from collections import defaultdict, namedtuple
+from collections import defaultdict
 from dataclasses import dataclass
 import re
-from typing import DefaultDict, Dict, Generator, List, Optional
+from typing import Iterator, Optional
 from util import *
 
 
@@ -18,10 +18,10 @@ class GiveInstruction:
 
 
 def parse_instructions(
-    lines: List[str],
-) -> Tuple[List[Tuple[int, int]], Dict[int, GiveInstruction]]:
-    input_instructions: List[Tuple[int, int]] = []
-    give_instructions: Dict[int, GiveInstruction] = {}
+    lines: list[str],
+) -> tuple[list[tuple[int, int]], dict[int, GiveInstruction]]:
+    input_instructions = list[tuple[int, int]]()
+    give_instructions = dict[int, GiveInstruction]()
 
     for instruction in lines:
         if match := re.fullmatch(r"value (\d+) goes to bot (\d+)", instruction):
@@ -43,8 +43,8 @@ def parse_instructions(
 
 
 def give_value(
-    bots: DefaultDict[int, List[int]],
-    outputs: Dict[int, int],
+    bots: defaultdict[int, list[int]],
+    outputs: dict[int, int],
     dest: Destination,
     val: int,
 ):
@@ -56,10 +56,10 @@ def give_value(
         raise InputError(f'unknown destination type "{dest.type}"')
 
 
-def solve(input: Optional[str]) -> Generator[any, None, None]:
+def solve(input: Optional[str]) -> Iterator[any]:
     input_instructions, give_instructions = parse_instructions(input.split("\n"))
-    bots: DefaultDict[int, List[int]] = defaultdict(list)
-    outputs: Dict[int, int] = {}
+    bots = defaultdict[int, list[int]]()
+    outputs = dict[int, int]()
 
     for bot, val in input_instructions:
         bots[bot].append(val)

@@ -1,7 +1,7 @@
-from typing import Generator, List, Optional
+from typing import Iterator, Optional
 from util import *
 
-Board = List[List[Optional[int]]]
+Board = list[list[Optional[int]]]
 
 
 def is_winner(board: Board):
@@ -17,7 +17,7 @@ def get_score(board: Board, just_called: int):
     )
 
 
-def solve(input: Optional[str]) -> Generator[any, None, None]:
+def solve(input: Optional[str]) -> Iterator[any]:
     nums, *boards = input.split("\n\n")
     nums = [int(num) for num in nums.split(",")]
     boards = [

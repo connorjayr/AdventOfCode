@@ -1,14 +1,18 @@
-from collections import Counter, namedtuple
+from dataclasses import dataclass
 import re
-from typing import Generator, Optional
+from typing import Counter, Iterator, Optional
 from util import *
 
 
-Room = namedtuple("Room", ("name", "sector_id", "checksum"))
+@dataclass
+class Room:
+    name: str
+    sector_id: int
+    checksum: str
 
 
 def is_real(room: Room) -> bool:
-    letters = Counter(room.name.replace("-", ""))
+    letters = Counter[str](room.name.replace("-", ""))
     most_common = letters.most_common()
     most_common.sort(key=lambda l: l[0])
     most_common.sort(key=lambda l: l[1], reverse=True)
@@ -24,8 +28,8 @@ def decrypt_name(room: Room) -> str:
     )
 
 
-def solve(input: Optional[str]) -> Generator[any, None, None]:
-    rooms = []
+def solve(input: Optional[str]) -> Iterator[any]:
+    rooms = list[Room]()
     for room in input.split("\n"):
         name, sector_id, checksum = re.findall(
             r"^([a-z-]+)-(\d+)\[([a-z]{5})\]$", room

@@ -1,9 +1,9 @@
 import hashlib
-from typing import Generator, Optional
+from typing import Iterator, Optional
 from util import *
 
 
-def solve(input: Optional[str]) -> Generator[any, None, None]:
+def solve(input: Optional[str]) -> Iterator[any]:
     password = ""
     index = 0
     while len(password) < 8:

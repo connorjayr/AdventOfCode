@@ -1,8 +1,8 @@
-from typing import Dict, Generator, List, Optional
+from typing import Iterator, Optional
 from util import *
 
 
-def run_program(program: List[str], registers: Dict[str, int]) -> int:
+def run_program(program: list[str], registers: dict[str, int]) -> int:
     """Runs an assembunny program.
 
     Args:
@@ -34,7 +34,7 @@ def run_program(program: List[str], registers: Dict[str, int]) -> int:
         pc += 1
 
 
-def solve(input: Optional[str]) -> Generator[any, None, None]:
+def solve(input: Optional[str]) -> Iterator[any]:
     program = input.split("\n")
 
     registers = {"a": 0, "b": 0, "c": 0, "d": 0}

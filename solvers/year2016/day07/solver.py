@@ -1,5 +1,5 @@
 import re
-from typing import Generator, List, Optional
+from typing import Iterator, Optional
 from util import *
 
 
@@ -26,7 +26,7 @@ def supports_tls(ip: str) -> bool:
     return has_abba
 
 
-def supports_ssl(ip: str, hypertext_sequences: List[str]) -> bool:
+def supports_ssl(ip: str, hypertext_sequences: list[str]) -> bool:
     inside_brackets = False
     for idx in range(len(ip) - 2):
         if ip[idx] == "[":
@@ -40,7 +40,7 @@ def supports_ssl(ip: str, hypertext_sequences: List[str]) -> bool:
     return False
 
 
-def solve(input: Optional[str]) -> Generator[any, None, None]:
+def solve(input: Optional[str]) -> Iterator[any]:
     ips = input.split("\n")
     yield [supports_tls(ip) for ip in ips].count(True)
     yield [supports_ssl(ip, re.findall(r"\[([^\]]+)\]", ip)) for ip in ips].count(True)

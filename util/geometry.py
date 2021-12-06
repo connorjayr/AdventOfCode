@@ -1,13 +1,13 @@
 from fractions import Fraction
 import math
 from numbers import Number
-from typing import Generic, Iterator, Tuple, TypeVar
+from typing import Generic, Iterator, TypeVar
 
 T = TypeVar("T", bound=Number)
 
 
 class Vector(Generic[T]):
-    components: Tuple[T]
+    components: tuple[T]
 
     def __init__(self, *components: T):
         self.components = components
@@ -108,7 +108,7 @@ class BoundingBox(Generic[T]):
 
 
 class Line:
-    endpoints: Tuple[Vector[int]]
+    endpoints: tuple[Vector[int]]
 
     def __init__(self, a: Vector[int], b: Vector[int]):
         if len(a) != 2 or len(b) != 2:

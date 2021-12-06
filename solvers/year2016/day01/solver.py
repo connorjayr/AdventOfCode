@@ -1,13 +1,13 @@
-from typing import Generator, Optional
+from typing import Iterator, Optional
 from util import *
 
 
-def solve(input: Optional[str]) -> Generator[any, None, None]:
-    pos = Vector(0, 0)
-    dir = Vector(0, 1)
+def solve(input: Optional[str]) -> Iterator[any]:
+    pos = Vector[int](0, 0)
+    dir = Vector[int](0, 1)
 
-    visited = set()
-    first_pos_visited_twice = None
+    visited = set[Vector[int]]()
+    first_pos_visited_twice: Optional[Vector[int]] = None
 
     for instruction in input.split(", "):
         turn = instruction[0]

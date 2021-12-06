@@ -1,5 +1,5 @@
 import re
-from typing import Generator, Optional
+from typing import Iterator, Optional
 from util import *
 
 
@@ -35,6 +35,6 @@ def decompress_v2(s: str) -> int:
     return length
 
 
-def solve(input: Optional[str]) -> Generator[any, None, None]:
+def solve(input: Optional[str]) -> Iterator[any]:
     yield decompress_v1(input)
     yield decompress_v2(input)

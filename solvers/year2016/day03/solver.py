@@ -1,4 +1,4 @@
-from typing import Generator, Optional
+from typing import Iterator, Optional
 from util import *
 
 
@@ -16,7 +16,7 @@ def is_possible_triangle(a: int, b: int, c: int) -> bool:
     return a + b > c and b + c > a and c + a > b
 
 
-def solve(input: Optional[str]) -> Generator[any, None, None]:
+def solve(input: Optional[str]) -> Iterator[any]:
     triangles = [
         [int(side) for side in triangle.split()] for triangle in input.split("\n")
     ]
