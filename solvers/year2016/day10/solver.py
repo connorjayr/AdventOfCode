@@ -58,7 +58,7 @@ def give_value(
 
 def solve(input: Optional[str]) -> Iterator[any]:
     input_instructions, give_instructions = parse_instructions(input.split("\n"))
-    bots = defaultdict[int, list[int]]()
+    bots = defaultdict[int, list[int]](list[int])
     outputs = dict[int, int]()
 
     for bot, val in input_instructions:
