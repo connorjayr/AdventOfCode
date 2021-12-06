@@ -1,3 +1,5 @@
+from fractions import Fraction
+import math
 from numbers import Number
 from typing import Generic, Iterator, Tuple, TypeVar
 
@@ -46,6 +48,8 @@ class Vector(Generic[T]):
 
     def __str__(self) -> str:
         return f"({', '.join(str(x) for x in self.components)})"
+
+    __repr__ = __str__
 
     def rotate_ccw(self) -> "Vector[T]":
         """Rotates this vector 90 degrees counterclockwise.
@@ -101,3 +105,36 @@ class BoundingBox(Generic[T]):
         """
         self.lower = Vector[T](*(min(l, x) for l, x in zip(self.lower, vec)))
         self.upper = Vector[T](*(min(x, u) for x, u in zip(vec, self.upper)))
+
+
+class Line:
+    endpoints: Tuple[Vector[int]]
+
+    def __init__(self, a: Vector[int], b: Vector[int]):
+        if len(a) != 2 or len(b) != 2:
+            raise ValueError("endpoints must be two-dimensional")
+        self.endpoints = (a, b)
+
+    def slope(self) -> Vector[int]:
+        """
+        Returns:
+            The slope of this line.
+        """
+        num = self.endpoints[1].components[1] - self.endpoints[0].components[1]
+        denom = self.endpoints[1].components[0] - self.endpoints[0].components[0]
+        gcd = math.gcd(num, denom)
+        return Vector[int](num // gcd, denom // gcd)
+
+    def integral_points(self) -> Iterator[Vector[int]]:
+        """
+        Returns:
+            An iterator that iterates over the integral points (points whose
+            coordinates are both integers) through which this line passes.
+        """
+        point = self.endpoints[0]
+        yield point
+
+        step = Vector[int](*reversed(self.slope()))
+        while point != self.endpoints[1]:
+            point += step
+            yield point
