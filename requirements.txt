@@ -1,4 +1,6 @@
 argparse
+beautifulsoup4
 clipboard
 python-dotenv
 requests
+termcolor
