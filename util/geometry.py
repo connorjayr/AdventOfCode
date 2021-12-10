@@ -1,4 +1,4 @@
-from fractions import Fraction
+import itertools
 import math
 from numbers import Number
 from typing import Generic, Iterator, TypeVar
@@ -50,6 +50,32 @@ class Vector(Generic[T]):
         return f"({', '.join(str(x) for x in self.components)})"
 
     __repr__ = __str__
+
+    def adjacent(self, include_corners=False, step=1) -> Iterator["Vector[T]"]:
+        """
+        Args:
+            include_corners: Whether or not to consider corners as adjacent.
+            step: The step size between this vector and adjacent ones.
+
+        Returns:
+            An iterator that iterates through all vectors adjacent to this
+            vector.
+        """
+        if include_corners:
+            for offset in itertools.product((-step, 0, step), repeat=len(self)):
+                if all(x == 0 for x in offset):
+                    # A vector cannot be adjacent to itself
+                    continue
+                yield self + Vector(*offset)
+        else:
+            for component_idx in range(len(self)):
+                for offset in (-step, step):
+                    yield self + Vector(
+                        *(
+                            offset if idx == component_idx else 0
+                            for idx in range(len(self))
+                        )
+                    )
 
     def rotate_ccw(self) -> "Vector[T]":
         """Rotates this vector 90 degrees counterclockwise.
@@ -105,6 +131,14 @@ class BoundingBox(Generic[T]):
         """
         self.lower = Vector[T](*(min(l, x) for l, x in zip(self.lower, vec)))
         self.upper = Vector[T](*(min(x, u) for x, u in zip(vec, self.upper)))
+
+    def integral_points(self) -> Iterator[Vector[T]]:
+        lower = Vector[int](*(math.ceil(x) for x in self.lower))
+        upper = Vector[int](*(math.floor(x) for x in self.upper))
+        yield from map(
+            lambda x: Vector[int](*x),
+            itertools.product(*(range(l, u + 1) for l, u in zip(lower, upper))),
+        )
 
 
 class Line:
