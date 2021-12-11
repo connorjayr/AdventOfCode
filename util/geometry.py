@@ -114,11 +114,29 @@ class BoundingBox(Generic[T]):
     lower: Vector[T]
     upper: Vector[T]
 
-    def __init__(self, lower: Vector[T], upper: Vector[T]):
+    def __init__(self, lower: Vector[T], upper: Vector[T]) -> "BoundingBox[T]":
         if len(lower) != len(upper):
             raise ValueError("vectors must have same length")
         self.lower = lower
         self.upper = upper
+
+    @classmethod
+    def from_grid(cls, grid: list[any]) -> "BoundingBox[T]":
+        """Constructs a bounding box containing all positions in an
+        n-dimensional list.
+
+        Args:
+            grid: The n-dimensional list.
+
+        Returns:
+            The bounding box.
+        """
+        components = list[int]()
+        while isinstance(grid, list):
+            components.append(len(grid) - 1)
+            grid = grid[0]
+        upper = Vector[int](*components)
+        return cls(upper - upper, upper)
 
     def __contains__(self, vec: Vector[T]) -> bool:
         return all(l <= x <= u for l, x, u in zip(self.lower, vec, self.upper))
