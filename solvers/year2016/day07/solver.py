@@ -42,5 +42,5 @@ def supports_ssl(ip: str, hypertext_sequences: list[str]) -> bool:
 
 def solve(input: Optional[str]) -> Iterator[any]:
     ips = input.split("\n")
-    yield [supports_tls(ip) for ip in ips].count(True)
-    yield [supports_ssl(ip, re.findall(r"\[([^\]]+)\]", ip)) for ip in ips].count(True)
+    yield sum(supports_tls(ip) for ip in ips)
+    yield sum(supports_ssl(ip, re.findall(r"\[([^\]]+)\]", ip)) for ip in ips)
