@@ -13,7 +13,7 @@ import re
 import requests
 import sys
 from termcolor import colored
-from typing import Optional, Tuple
+from typing import Optional
 
 
 def retrieve_example(day: int, year: int) -> str:
