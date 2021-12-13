@@ -162,7 +162,8 @@ def main():
         input = retrieve_input(args.day, args.year)
     for (part, solution) in enumerate(solver.solve(input), 1):
         if len(parts) == 0 or part in parts:
-            print(f"Part {part} solution:{'\n' if '\n' in solution else ' '}{solution}")
+            sep = "\n" if "\n" in str(solution) else " "
+            print(f"Part {part} solution:{sep}{solution}")
             clipboard.copy(solution)
 
 
