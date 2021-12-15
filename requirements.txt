@@ -1,6 +1,7 @@
 argparse
 beautifulsoup4
 clipboard
+networkx
 python-dotenv
 requests
 termcolor

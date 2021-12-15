@@ -7,12 +7,11 @@ def flash(grid: list[list[int]], pos: Vector[int], flashed: set[Vector[int]]):
         return
     flashed.add(pos)
 
-    for adj in pos.adjacent(include_corners=True):
-        if adj not in BoundingBox.from_grid(grid):
-            continue
-        grid[adj[0]][adj[1]] += 1
-        if grid[adj[0]][adj[1]] > 9:
-            flash(grid, adj, flashed)
+    bbox = BoundingBox.from_grid(grid)
+    for neighbor in pos.neighbors(include_diagonal=True, in_bbox=bbox):
+        grid[neighbor[0]][neighbor[1]] += 1
+        if grid[neighbor[0]][neighbor[1]] > 9:
+            flash(grid, neighbor, flashed)
 
 
 def take_step(grid: list[list[int]]):

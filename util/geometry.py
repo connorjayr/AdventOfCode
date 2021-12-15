@@ -1,7 +1,7 @@
 import itertools
 import math
 from numbers import Number
-from typing import Generic, Iterator, TypeVar
+from typing import Generic, Iterator, Optional, TypeVar
 
 T = TypeVar("T", bound=Number)
 
@@ -9,7 +9,7 @@ T = TypeVar("T", bound=Number)
 class Vector(Generic[T]):
     components: tuple[T]
 
-    def __init__(self, *components: T):
+    def __init__(self, *components: T) -> "Vector[T]":
         self.components = components
 
     def __len__(self) -> T:
@@ -47,35 +47,43 @@ class Vector(Generic[T]):
         return self + -vec
 
     def __str__(self) -> str:
-        return f"({', '.join(str(x) for x in self.components)})"
+        return f"({', '.join(str(x) for x in self)})"
 
     __repr__ = __str__
 
-    def adjacent(self, include_corners=False, step=1) -> Iterator["Vector[T]"]:
+    def neighbors(
+        self, include_diagonal=False, in_bbox: "Optional[BoundingBox[T]]" = None, step=1
+    ) -> Iterator["Vector[T]"]:
         """
         Args:
-            include_corners: Whether or not to consider corners as adjacent.
-            step: The step size between this vector and adjacent ones.
+            include_diagonal: Whether or not to include vectors that are one
+            step away diagonally in the return values.
+            step: The step size between this vector and its neighbors.
 
         Returns:
-            An iterator that iterates through all vectors adjacent to this
-            vector.
+            An iterator that iterates through the neighbors of this vector.
         """
-        if include_corners:
+        if include_diagonal:
             for offset in itertools.product((-step, 0, step), repeat=len(self)):
                 if all(x == 0 for x in offset):
-                    # A vector cannot be adjacent to itself
+                    # A vector cannot be neighbors with itself
                     continue
-                yield self + Vector(*offset)
+                neighbor = self + Vector(*offset)
+                if in_bbox is not None and neighbor not in in_bbox:
+                    continue
+                yield neighbor
         else:
             for component_idx in range(len(self)):
                 for offset in (-step, step):
-                    yield self + Vector(
+                    neighbor = self + Vector(
                         *(
                             offset if idx == component_idx else 0
                             for idx in range(len(self))
                         )
                     )
+                    if in_bbox is not None and neighbor not in in_bbox:
+                        continue
+                    yield neighbor
 
     def rotate_ccw(self) -> "Vector[T]":
         """Rotates this vector 90 degrees counterclockwise.
@@ -117,8 +125,8 @@ class BoundingBox(Generic[T]):
     def __init__(self, lower: Vector[T], upper: Vector[T]) -> "BoundingBox[T]":
         if len(lower) != len(upper):
             raise ValueError("vectors must have same length")
-        self.lower = lower
-        self.upper = upper
+        self.lower = Vector[T](*(min(l, u) for l, u in zip(lower, upper)))
+        self.upper = Vector[T](*(max(l, u) for l, u in zip(lower, upper)))
 
     @classmethod
     def from_grid(cls, grid: list[any]) -> "BoundingBox[T]":
@@ -148,11 +156,11 @@ class BoundingBox(Generic[T]):
             vec: The vector.
         """
         self.lower = Vector[T](*(min(l, x) for l, x in zip(self.lower, vec)))
-        self.upper = Vector[T](*(min(x, u) for x, u in zip(vec, self.upper)))
+        self.upper = Vector[T](*(max(x, u) for x, u in zip(vec, self.upper)))
 
     def integral_points(self) -> Iterator[Vector[T]]:
-        lower = Vector[int](*(math.ceil(x) for x in self.lower))
-        upper = Vector[int](*(math.floor(x) for x in self.upper))
+        lower = Vector[int](*(math.ceil(l) for l in self.lower))
+        upper = Vector[int](*(math.floor(u) for u in self.upper))
         yield from map(
             lambda x: Vector[int](*x),
             itertools.product(*(range(l, u + 1) for l, u in zip(lower, upper))),

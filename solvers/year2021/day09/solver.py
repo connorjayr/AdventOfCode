@@ -25,15 +25,11 @@ def bfs(heightmap: Heightmap, pos: Vector[int], visited: set[Vector[int]]):
     while len(queue) > 0:
         head = queue.popleft()
         size += 1
-        for adj in head.adjacent():
-            if (
-                adj in visited
-                or adj not in heightmap.bbox
-                or heightmap.heights[adj[0]][adj[1]] == 9
-            ):
+        for neighbor in head.neighbors(in_bbox=heightmap.bbox):
+            if neighbor in visited or heightmap.heights[neighbor[0]][neighbor[1]] == 9:
                 continue
-            queue.append(adj)
-            visited.add(adj)
+            queue.append(neighbor)
+            visited.add(neighbor)
     return size
 
 
@@ -46,9 +42,9 @@ def solve(input: Optional[str]) -> Iterator[any]:
         heightmap.heights[pos[0]][pos[1]] + 1
         for pos in heightmap.bbox.integral_points()
         if all(
-            heightmap.heights[pos[0]][pos[1]] < heightmap.heights[adj[0]][adj[1]]
-            for adj in pos.adjacent()
-            if adj in heightmap.bbox
+            heightmap.heights[pos[0]][pos[1]]
+            < heightmap.heights[neighbor[0]][neighbor[1]]
+            for neighbor in pos.neighbors(in_bbox=heightmap.bbox)
         )
     )
 
