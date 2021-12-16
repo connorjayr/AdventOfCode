@@ -5,7 +5,6 @@ from util import *
 
 def apply_steps(template: str, rules: dict[str, str], steps: int):
     pairs = Counter[str](a + b for a, b in zip(template, template[1:]))
-    print(pairs)
 
     for _ in range(steps):
         new_pairs = Counter[str]()
@@ -18,7 +17,6 @@ def apply_steps(template: str, rules: dict[str, str], steps: int):
     letters = Counter[str](template[-1])
     for pair, count in pairs.items():
         letters[pair[0]] += count
-    print(letters)
     most_common = letters.most_common()
     return most_common[0][1] - most_common[-1][1]
 
