@@ -91,6 +91,21 @@ def retrieve_input(day: int, year: int) -> Optional[str]:
     return input
 
 
+def submit(day: int, year: int, part: int, answer: any):
+    """Submits the answer for a puzzle to https://adventofcode.com.
+
+    Args:
+        day: Which day the puzzle is from.
+        year: Which year the puzzle is from.
+        part: Which part was solved.
+        answer: The answer to the puzzle.
+    """
+    url = f"https://adventofcode.com/{year}/day/{day}/answer"
+    session = os.getenv("ADVENT_OF_CODE_SESSION")
+    response = requests.post(url, cookies={"session": session})
+    print(response)
+
+
 def main():
     parser = argparse.ArgumentParser(description="Solves an Advent of Code puzzle.")
     parser.add_argument(
@@ -111,14 +126,16 @@ def main():
     # A user should not be able to do more than one of the following at the same
     # time:
     #
-    # -
+    # - Attempt to use the example puzzle input
+    # - Manually provide the puzzle input
+    # - Submit the actual answer to https://adventofcode.com
     input_group = parser.add_mutually_exclusive_group()
     input_group.add_argument(
         "--example",
         "-e",
         action="store_true",
         default=False,
-        help="attempts to use the puzzle's example input",
+        help="attempts to use the example puzzle input",
     )
     input_group.add_argument(
         "--input", "-i", help="path to the puzzle input", type=argparse.FileType("r")
@@ -128,7 +145,7 @@ def main():
         "-s",
         action="store_true",
         default=False,
-        help="submits the solution(s)",
+        help="submits the answer(s)",
     )
 
     parser.add_argument(
@@ -152,19 +169,25 @@ def main():
         )
         exit(1)
 
-    parts = set(args.part or [])
-    doc: Optional[bs4.BeautifulSoup] = None
     if args.example:
         input = retrieve_example(args.day, args.year)
     elif args.input is not None:
         input = args.input.read()
     else:
         input = retrieve_input(args.day, args.year)
-    for (part, solution) in enumerate(solver.solve(input), 1):
+
+    parts = set(args.part or [])
+    last: Optional[tuple[int, any]] = None
+    for (part, answer) in enumerate(solver.solve(input), 1):
         if len(parts) == 0 or part in parts:
-            sep = "\n" if "\n" in str(solution) else " "
-            print(f"Part {part} solution:{sep}{solution}")
-            clipboard.copy(solution)
+            sep = "\n" if "\n" in str(answer) else " "
+            print(f"Part {part} answer:{sep}{answer}")
+            clipboard.copy(answer)
+            last = (part, answer)
+
+    if args.submit and last is not None:
+        part, answer = last
+        submit(args.day, args.year, part, answer)
 
 
 if __name__ == "__main__":

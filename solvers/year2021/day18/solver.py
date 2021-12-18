@@ -16,6 +16,32 @@ class Node:
         else:
             return f"[{self.left},{self.right}]"
 
+    def find_left_sibling(self) -> "Optional[Node]":
+        sibling = self
+
+        while sibling.parent is not None and sibling.parent.left is sibling:
+            sibling = sibling.parent
+        if sibling.parent is None:
+            return None
+
+        sibling = sibling.parent.left
+        while sibling.right is not None:
+            sibling = sibling.right
+        return sibling
+
+    def find_right_sibling(self) -> "Optional[Node]":
+        sibling = self
+
+        while sibling.parent is not None and sibling.parent.right is sibling:
+            sibling = sibling.parent
+        if sibling.parent is None:
+            return None
+
+        sibling = sibling.parent.right
+        while sibling.left is not None:
+            sibling = sibling.left
+        return sibling
+
 
 def parse_num(num: str) -> Node:
     try:
@@ -46,25 +72,13 @@ def explode(node: Node, depth: int = 0) -> bool:
         return False
 
     if node.value is None and depth >= 4:
-        on_left = node
-        while on_left.parent is not None and on_left.parent.left is on_left:
-            on_left = on_left.parent
-        if on_left.parent is not None:
-            on_left = on_left.parent.left
-            while on_left.right is not None:
-                on_left = on_left.right
-            if on_left is not None:
-                on_left.value += node.left.value
+        left_sibling = node.find_left_sibling()
+        if left_sibling is not None:
+            left_sibling.value += node.left.value
 
-        on_right = node
-        while on_right.parent is not None and on_right.parent.right is on_right:
-            on_right = on_right.parent
-        if on_right.parent is not None:
-            on_right = on_right.parent.right
-            while on_right.left is not None:
-                on_right = on_right.left
-            if on_right is not None:
-                on_right.value += node.right.value
+        right_sibling = node.find_right_sibling()
+        if right_sibling is not None:
+            right_sibling.value += node.right.value
 
         node.value = 0
         node.left = None
