@@ -1,41 +1,42 @@
+import re
 from typing import Iterator, Optional
 from util import *
 
 
-def is_in_target(vel, target):
+def is_in_target(vel: Vector[int], target: BoundingBox) -> tuple[bool, int]:
     max_height = -math.inf
-    pos = (0, 0)
-    while pos[1] >= target[1][0]:
-        pos = (pos[0] + vel[0], pos[1] + vel[1])
+    pos = Vector[int](0, 0)
+    while pos[0] <= target.upper[0] and pos[1] >= target.lower[1]:
+        pos += vel
         max_height = max(max_height, pos[1])
-        if vel[0] > 0:
-            vel = (vel[0] - 1, vel[1] - 1)
-        elif vel[0] < 0:
-            vel = (vel[0] + 1, vel[1] - 1)
-        else:
-            vel = (vel[0], vel[1] - 1)
 
-        if (
-            target[0][0] <= pos[0]
-            and pos[0] <= target[0][1]
-            and target[1][0] <= pos[1]
-            and pos[1] <= target[1][1]
-        ):
+        x_vel = vel[0]
+        if x_vel > 0:
+            x_vel -= 1
+        elif x_vel < 0:
+            x_vel += 1
+        vel = Vector[int](x_vel, vel[1] - 1)
+
+        if pos in target:
             return (True, max_height)
+
     return (False, max_height)
 
 
 def solve(input: Optional[str]) -> Iterator[any]:
-    pos = (0, 0)
-    target = ((201, 230), (-99, -65))
-    max_max = -math.inf
-    vels = set()
-    for y_vel in range(-100, 101):
-        print(y_vel)
-        for x_vel in range(231):
-            in_target, max_height = is_in_target((x_vel, y_vel), target)
+    x1, x2, y1, y2 = re.match(
+        r"target area: x=(-?\d+)\.\.(-?\d+), y=(-?\d+)\.\.(-?\d+)", input
+    ).groups()
+    target = BoundingBox(Vector[int](int(x1), int(y1)), Vector[int](int(x2), int(y2)))
+
+    highest_y_pos = -math.inf
+    vels = set[Vector[int]]()
+    for y_vel in range(target.lower[1], -target.lower[1] + 1):
+        for x_vel in range(target.upper[0] + 1):
+            vel = Vector[int](x_vel, y_vel)
+            in_target, max_height = is_in_target(vel, target)
             if in_target:
-                max_max = max(max_max, max_height)
-                vels.add((x_vel, y_vel))
-    yield max_max
+                highest_y_pos = max(highest_y_pos, max_height)
+                vels.add(vel)
+    yield highest_y_pos
     yield len(vels)
