@@ -48,8 +48,8 @@ def all_rotations(pos: Vector[int]):
 
 def determine_pos(a: Scanner, b: Scanner) -> bool:
     for beacons in zip(*(all_rotations(beacon) for beacon in b.beacons)):
-        for beacon_from_a in a.beacons:
-            for beacon_from_b in beacons[:-11]:
+        for beacon_from_a in list(a.beacons)[:-10]:
+            for beacon_from_b in beacons[:-10]:
                 b_to_a = beacon_from_a - beacon_from_b
                 offset_beacons = set(beacon + b_to_a for beacon in beacons)
                 if len(a.beacons.intersection(offset_beacons)) >= 12:
