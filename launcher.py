@@ -102,8 +102,14 @@ def submit(day: int, year: int, part: int, answer: any):
     """
     url = f"https://adventofcode.com/{year}/day/{day}/answer"
     session = os.getenv("ADVENT_OF_CODE_SESSION")
-    response = requests.post(url, cookies={"session": session})
-    print(response)
+    response = requests.post(
+        url, cookies={"session": session}, data={"level": part, "answer": str(answer)}
+    )
+
+    doc = bs4.BeautifulSoup(response.text, "html.parser")
+    for paragraph in doc.find("article").find_all("p"):
+        print()
+        print(paragraph.text)
 
 
 def main():
