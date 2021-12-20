@@ -52,12 +52,19 @@ class Vector(Generic[T]):
     __repr__ = __str__
 
     def neighbors(
-        self, include_diagonal=False, in_bbox: "Optional[BoundingBox[T]]" = None, step=1
+        self,
+        include_diagonal=False,
+        include_self=False,
+        in_bbox: "Optional[BoundingBox[T]]" = None,
+        step=1,
     ) -> Iterator["Vector[T]"]:
         """
         Args:
             include_diagonal: Whether or not to include vectors that are one
             step away diagonally in the return values.
+            include_self: Whether or not to include this vector in the return
+            values; i.e., whether or not to consider this vector as a neighbor
+            of itself.
             step: The step size between this vector and its neighbors.
 
         Returns:
@@ -65,14 +72,17 @@ class Vector(Generic[T]):
         """
         if include_diagonal:
             for offset in itertools.product((-step, 0, step), repeat=len(self)):
-                if all(x == 0 for x in offset):
-                    # A vector cannot be neighbors with itself
+                if not include_self and all(x == 0 for x in offset):
                     continue
+
                 neighbor = self + Vector(*offset)
                 if in_bbox is not None and neighbor not in in_bbox:
                     continue
                 yield neighbor
         else:
+            if include_self:
+                yield self
+
             for component_idx in range(len(self)):
                 for offset in (-step, step):
                     neighbor = self + Vector(
@@ -129,6 +139,23 @@ class BoundingBox(Generic[T]):
         self.upper = Vector[T](*(max(l, u) for l, u in zip(lower, upper)))
 
     @classmethod
+    def from_vectors(cls, vectors: list[Vector[T]]) -> "BoundingBox[T]":
+        """Constructs a bounding box containing all vectors in a list.
+
+        Args:
+            vectors: The list of vectors.
+
+        Returns:
+            The bounding box.
+        """
+        if len(vectors) == 0:
+            raise ValueError("list of vectors must be non-empty")
+        return cls(
+            Vector[T](*(min(*x) for x in zip(*vectors))),
+            Vector[T](*(max(*x) for x in zip(*vectors))),
+        )
+
+    @classmethod
     def from_grid(cls, grid: list[any]) -> "BoundingBox[T]":
         """Constructs a bounding box containing all positions in an
         n-dimensional list.
@@ -149,16 +176,38 @@ class BoundingBox(Generic[T]):
     def __contains__(self, vec: Vector[T]) -> bool:
         return all(l <= x <= u for l, x, u in zip(self.lower, vec, self.upper))
 
-    def expand(self, vec: Vector[T]):
+    def expand(self, vec: Vector[T]) -> "BoundingBox[T]":
         """Expands this bounding box to contain a vector.
 
         Args:
             vec: The vector.
+
+        Returns:
+            This bounding box.
         """
         self.lower = Vector[T](*(min(l, x) for l, x in zip(self.lower, vec)))
         self.upper = Vector[T](*(max(x, u) for x, u in zip(vec, self.upper)))
+        return self
+
+    def extend(self, step: T) -> "BoundingBox[T]":
+        """Extends this bounding box in each direction.
+
+        Args:
+            step: The distance that this bounding box is extended.
+
+        Returns:
+            This bounding box.
+        """
+        self.lower = Vector[T](*(x - step for x in self.lower))
+        self.upper = Vector[T](*(x + step for x in self.upper))
+        return self
 
     def integral_points(self) -> Iterator[Vector[T]]:
+        """
+        Returns:
+            An iterator that iterates over the integral points (points whose
+            coordinates are both integers) contained by this bounding box.
+        """
         lower = Vector[int](*(math.ceil(l) for l in self.lower))
         upper = Vector[int](*(math.floor(u) for u in self.upper))
         yield from map(
