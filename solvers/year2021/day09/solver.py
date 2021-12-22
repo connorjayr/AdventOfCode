@@ -11,7 +11,7 @@ class Heightmap:
 
     def __init__(self, heights):
         self.heights = heights
-        self.bbox = BoundingBox(
+        self.bbox = BoundingBox[int](
             Vector[int](0, 0), Vector[int](len(heights) - 1, len(heights[0]) - 1)
         )
 

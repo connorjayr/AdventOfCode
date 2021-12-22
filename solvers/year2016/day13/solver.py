@@ -16,7 +16,7 @@ def solve(input: Optional[str]) -> Iterator[any]:
 
     visited = set[Vector[int]]((start,))
     queue = deque[tuple[int, Vector[int]]](((0, start),))
-    bbox = BoundingBox(Vector[int](0, 0), Vector[int](math.inf, math.inf))
+    bbox = BoundingBox[int](Vector[int](0, 0), Vector[int](math.inf, math.inf))
     while len(queue) > 0:
         steps, pos = queue.popleft()
         if pos == end:

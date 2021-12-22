@@ -4,7 +4,7 @@ from util import *
 
 def get_code(
     keypad: tuple[tuple[int]],
-    keypad_bbox: Union[BoundingBox, list[Vector[int]]],
+    keypad_bbox: Union[BoundingBox[int], list[Vector[int]]],
     start_pos: Vector[int],
     instructions: list[str],
 ) -> str:
@@ -28,7 +28,7 @@ def solve(input: Optional[str]) -> Iterator[any]:
     instructions = input.split("\n")
     yield get_code(
         (("1", "2", "3"), ("4", "5", "6"), ("7", "8", "9")),
-        BoundingBox(Vector[int](0, 0), Vector[int](2, 2)),
+        BoundingBox[int](Vector[int](0, 0), Vector[int](2, 2)),
         Vector[int](1, 1),
         instructions,
     )

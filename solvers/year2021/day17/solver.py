@@ -3,7 +3,7 @@ from typing import Iterator, Optional
 from util import *
 
 
-def is_in_target(vel: Vector[int], target: BoundingBox) -> tuple[bool, int]:
+def is_in_target(vel: Vector[int], target: BoundingBox[int]) -> tuple[bool, int]:
     max_height = -math.inf
     pos = Vector[int](0, 0)
     while pos[0] <= target.upper[0] and pos[1] >= target.lower[1]:
@@ -27,7 +27,9 @@ def solve(input: Optional[str]) -> Iterator[any]:
     x1, x2, y1, y2 = re.match(
         r"target area: x=(-?\d+)\.\.(-?\d+), y=(-?\d+)\.\.(-?\d+)", input
     ).groups()
-    target = BoundingBox(Vector[int](int(x1), int(y1)), Vector[int](int(x2), int(y2)))
+    target = BoundingBox[int](
+        Vector[int](int(x1), int(y1)), Vector[int](int(x2), int(y2))
+    )
 
     highest_y_pos = -math.inf
     vels = set[Vector[int]]()
