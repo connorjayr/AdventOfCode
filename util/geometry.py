@@ -173,8 +173,21 @@ class BoundingBox(Generic[T]):
         upper = Vector[int](*components)
         return cls(upper - upper, upper)
 
+    def __and__(self, other: "BoundingBox[T]") -> "Optional[BoundingBox[T]]":
+        lower = Vector[int](*(max(x, y) for x, y in zip(self.lower, other.lower)))
+        upper = Vector[int](*(min(x, y) for x, y in zip(self.upper, other.upper)))
+        if any(l > u for l, u in zip(lower, upper)):
+            return None
+
+        return BoundingBox[T](lower, upper)
+
     def __contains__(self, vec: Vector[T]) -> bool:
         return all(l <= x <= u for l, x, u in zip(self.lower, vec, self.upper))
+
+    def __str__(self) -> str:
+        return f"[{self.lower}, {self.upper}]"
+
+    __repr__ = __str__
 
     def expand(self, vec: Vector[T]) -> "BoundingBox[T]":
         """Expands this bounding box to contain a vector.
