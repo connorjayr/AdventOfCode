@@ -156,7 +156,7 @@ class BoundingBox(Generic[T]):
         )
 
     @classmethod
-    def from_grid(cls, grid: list[any]) -> "BoundingBox[T]":
+    def from_grid(cls, grid: list[any], dims: Optional[int] = None) -> "BoundingBox[T]":
         """Constructs a bounding box containing all positions in an
         n-dimensional list.
 
@@ -167,9 +167,11 @@ class BoundingBox(Generic[T]):
             The bounding box.
         """
         components = list[int]()
-        while isinstance(grid, list):
+        dim = 0
+        while isinstance(grid, list) and (dims is None or dim < dims):
             components.append(len(grid) - 1)
             grid = grid[0]
+            dim += 1
         upper = Vector[int](*components)
         return cls(upper - upper, upper)
 
