@@ -16,6 +16,10 @@ from termcolor import colored
 from typing import Optional
 
 
+SESSION = os.getenv("ADVENT_OF_CODE_SESSION")
+USER_AGENT = os.getenv("ADVENT_OF_CODE_USER_AGENT")
+
+
 def retrieve_example(day: int, year: int) -> str:
     """Retrieves the example input for a puzzle from https://adventofcode.com.
 
@@ -28,7 +32,7 @@ def retrieve_example(day: int, year: int) -> str:
     """
     # Attempt to retrieve the example puzzle input from https://adventofcode.com
     url = f"https://adventofcode.com/{year}/day/{day}"
-    response = requests.get(url)
+    response = requests.get(url, headers={"User-Agent": USER_AGENT})
 
     doc = bs4.BeautifulSoup(response.text, "html.parser")
     keywords = ["for example", "example", "suppose"]
@@ -72,8 +76,11 @@ def retrieve_input(day: int, year: int) -> Optional[str]:
 
     # Retrieve the puzzle input from https://adventofcode.com
     url = f"https://adventofcode.com/{year}/day/{day}/input"
-    session = os.getenv("ADVENT_OF_CODE_SESSION")
-    response = requests.get(url, cookies={"session": session})
+    response = requests.get(
+        url,
+        headers={"User-Agent": USER_AGENT},
+        cookies={"session": SESSION},
+    )
     if response.status_code != 200:
         print(
             colored("WARNING", "yellow", attrs=["bold"]),
@@ -101,9 +108,11 @@ def submit(day: int, year: int, part: int, answer: any):
         answer: The answer to the puzzle.
     """
     url = f"https://adventofcode.com/{year}/day/{day}/answer"
-    session = os.getenv("ADVENT_OF_CODE_SESSION")
     response = requests.post(
-        url, cookies={"session": session}, data={"level": part, "answer": str(answer)}
+        url,
+        headers={"User-Agent": USER_AGENT},
+        cookies={"session": SESSION},
+        data={"level": part, "answer": str(answer)},
     )
 
     doc = bs4.BeautifulSoup(response.text, "html.parser")
