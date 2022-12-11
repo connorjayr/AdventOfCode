@@ -11,6 +11,7 @@ import os
 import pathlib
 import re
 import requests
+import shutil
 import sys
 from termcolor import colored
 from typing import Optional
@@ -20,23 +21,41 @@ SESSION = os.getenv("ADVENT_OF_CODE_SESSION")
 USER_AGENT = os.getenv("ADVENT_OF_CODE_USER_AGENT")
 
 
-def retrieve_example(day: int, year: int) -> str:
-    """Retrieves the example input for a puzzle from https://adventofcode.com.
+def retrieve_problem_page(day: int, year: int) -> bs4.BeautifulSoup:
+    """Retrieves the problem page for a puzzle from https://adventofcode.com.
 
     Args:
         day: Which day the puzzle is from.
         year: Which year the puzzle is from.
 
     Returns:
-        The example puzzle input.
+        The problem page as a BeautifulSoup object
     """
+    # If the problem page has previously been retrieved, then read it from the file
     # Attempt to retrieve the example puzzle input from https://adventofcode.com
     url = f"https://adventofcode.com/{year}/day/{day}"
-    response = requests.get(url, headers={"User-Agent": USER_AGENT})
+    response = requests.get(
+        url,
+        headers={"User-Agent": USER_AGENT},
+        cookies={"session": SESSION},
+    )
 
-    doc = bs4.BeautifulSoup(response.text, "html.parser")
+    return bs4.BeautifulSoup(response.text, "html.parser")
+
+
+def retrieve_example(doc: bs4.BeautifulSoup) -> str:
+    """Retrieves the example input for a puzzle from https://adventofcode.com.
+
+    Args:
+        doc: The BeautifulSoup object
+
+    Returns:
+        The example puzzle input.
+    """
+
     keywords = ["for example", "example", "suppose"]
     example: Optional[str] = None
+    answers: List[str] = []
     for keyword in keywords:
         match = doc.find(text=re.compile(keyword))
         if match is not None:
@@ -44,6 +63,7 @@ def retrieve_example(day: int, year: int) -> str:
             if code is not None:
                 example = code.text.strip()
                 break
+
     if example is None:
         print(
             colored("ERROR", "red", attrs=["bold"]),
@@ -53,6 +73,31 @@ def retrieve_example(day: int, year: int) -> str:
         exit(1)
 
     return example
+
+
+def check_example_answer(doc: bs4.BeautifulSoup, answer: str, part: int):
+    match = doc.find("main")
+    i = 1
+    for content in match.contents:
+        if content.text.startswith("---"):
+            if i != part:
+                i += 1
+                continue
+
+            if content.text.find(answer) != -1:
+                emph = [x.text.strip() for x in content.find_all("em")]
+
+                print(
+                    colored("FOUND", "green", attrs=["bold"]),
+                    colored("(emphasized too!)", "green", attrs=["bold"])
+                    if answer in emph
+                    else colored("(not emphasized)", "red", attrs=["bold"]),
+                )
+            else:
+                print(
+                    colored("NOT FOUND", "red", attrs=["bold"]),
+                )
+            break
 
 
 def retrieve_input(day: int, year: int) -> Optional[str]:
@@ -121,6 +166,47 @@ def submit(day: int, year: int, part: int, answer: any):
         print(paragraph.text)
 
 
+def copy_template(start_day: int, year: int):
+    template_path = pathlib.Path(f"template.py")
+    if not template_path.exists():
+        print(
+            colored("WARNING", "yellow", attrs=["bold"]),
+            f"Cannot find template file",
+            file=sys.stderr,
+        )
+        return
+
+    for day in range(start_day + 1, 26):
+        solver_path = pathlib.Path(f"solvers/year{year}/day{day}/solver.py")
+
+        if solver_path.exists() and day == start_day + 1:
+            user_input = input(
+                f"Solver already exists for day {day}. Would you like to overwrite all solvers"
+                f" after (and including) day {day}? "
+            )
+            if user_input.lower() not in ["y", "yes"]:
+                print(f"Quitting...")
+                return
+
+        # Copy the template file to the solver path
+        solver_path.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy(template_path, solver_path)
+        print(f"Copied template file to {solver_path}")
+
+
+def run_example(solver, args):
+    doc = retrieve_problem_page(args.day, args.year)
+    input = retrieve_example(doc)
+
+    parts = set(args.part or [])
+    for part, answer in enumerate(solver.solve(input), 1):
+        if len(parts) == 0 or part in parts:
+            sep = "\n" if "\n" in str(answer) else " "
+            print(f"Part {part} answer:{sep}{answer}")
+
+            check_example_answer(doc, str(answer), part)
+
+
 def main():
     parser = argparse.ArgumentParser(description="Solves an Advent of Code puzzle.")
     parser.add_argument(
@@ -162,6 +248,11 @@ def main():
         default=False,
         help="submits the answer(s)",
     )
+    input_group.add_argument(
+        "--init",
+        action="store_true",
+        help="initializes the solver for the rest of the year",
+    )
 
     parser.add_argument(
         "--part",
@@ -172,6 +263,10 @@ def main():
         type=int,
     )
     args = parser.parse_args()
+
+    if args.init is True:
+        copy_template(args.day, args.year)
+        return
 
     try:
         day = str(args.day).rjust(2, "0")
@@ -185,8 +280,9 @@ def main():
         exit(1)
 
     if args.example:
-        input = retrieve_example(args.day, args.year)
-    elif args.input is not None:
+        run_example(solver, args)
+        return
+    if args.input is not None:
         input = args.input.read()
     else:
         input = retrieve_input(args.day, args.year)
