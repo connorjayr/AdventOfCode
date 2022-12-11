@@ -13,6 +13,7 @@ import re
 import requests
 import shutil
 import sys
+from multiprocessing import Process
 from termcolor import colored
 from typing import Optional
 
@@ -84,19 +85,30 @@ def check_example_answer(doc: bs4.BeautifulSoup, answer: str, part: int):
                 i += 1
                 continue
 
+            sep = "\n" if "\n" in str(answer) else " "
+            text = (
+                colored("[EXAMPLE]", "cyan", attrs=["bold"])
+                + f" Part {part} answer:{sep}{answer}"
+            )
+
+            next_text = ""
+
             if content.text.find(answer) != -1:
                 emph = [x.text.strip() for x in content.find_all("em")]
 
-                print(
-                    colored("FOUND", "green", attrs=["bold"]),
-                    colored("(emphasized too!)", "green", attrs=["bold"])
-                    if answer in emph
-                    else colored("(not emphasized)", "red", attrs=["bold"]),
+                next_text = (
+                    colored("FOUND", "green", attrs=["bold"])
+                    + " "
+                    + (
+                        colored("(emphasized too!)", "green", attrs=["bold"])
+                        if answer in emph
+                        else colored("(not emphasized)", "red", attrs=["bold"])
+                    )
                 )
             else:
-                print(
-                    colored("NOT FOUND", "red", attrs=["bold"]),
-                )
+                next_text = colored("NOT FOUND", "red", attrs=["bold"])
+
+            print(f"{text}{sep}{next_text}")
             break
 
 
@@ -201,9 +213,6 @@ def run_example(solver, args):
     parts = set(args.part or [])
     for part, answer in enumerate(solver.solve(input), 1):
         if len(parts) == 0 or part in parts:
-            sep = "\n" if "\n" in str(answer) else " "
-            print(f"Part {part} answer:{sep}{answer}")
-
             check_example_answer(doc, str(answer), part)
 
 
@@ -282,9 +291,11 @@ def main():
     if args.example:
         run_example(solver, args)
         return
-    if args.input is not None:
+    elif args.input is not None:
         input = args.input.read()
     else:
+        p = Process(target=run_example, args=(solver, args))
+        p.start()
         input = retrieve_input(args.day, args.year)
 
     parts = set(args.part or [])
@@ -299,6 +310,8 @@ def main():
     if args.submit and last is not None:
         part, answer = last
         submit(args.day, args.year, part, answer)
+
+    p.join()
 
 
 if __name__ == "__main__":
