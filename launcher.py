@@ -15,7 +15,7 @@ import shutil
 import sys
 from multiprocessing import Process
 from termcolor import colored
-from typing import Optional, List
+from typing import Optional
 
 
 SESSION = os.getenv("ADVENT_OF_CODE_SESSION")
@@ -56,7 +56,6 @@ def retrieve_example(doc: bs4.BeautifulSoup) -> str:
 
     keywords = ["for example", "example", "suppose"]
     example: Optional[str] = None
-    answers: List[str] = []
     for keyword in keywords:
         match = doc.find(text=re.compile(keyword))
         if match is not None:
