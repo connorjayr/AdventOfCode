@@ -15,7 +15,7 @@ import shutil
 import sys
 from multiprocessing import Process
 from termcolor import colored
-from typing import Optional
+from typing import Optional, List
 
 
 SESSION = os.getenv("ADVENT_OF_CODE_SESSION")
