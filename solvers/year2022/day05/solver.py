@@ -41,5 +41,9 @@ def solve(input: Optional[str]) -> Iterator[any]:
         for instruction in procedure
     ]
 
-    yield "".join(col[-1] for col in do_procedure(stacks, procedure, False))
-    yield "".join(col[-1] for col in do_procedure(stacks, procedure, True))
+    yield "".join(
+        col[-1] for col in do_procedure(stacks, procedure, False) if len(col) > 0
+    )
+    yield "".join(
+        col[-1] for col in do_procedure(stacks, procedure, True) if len(col) > 0
+    )
