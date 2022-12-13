@@ -7,6 +7,8 @@ def bfs(grid: list[str], starts: list[tuple[int, int]]) -> int:
     queue = [(0, pos) for pos in starts]
     while len(queue) > 0:
         steps, pos = queue.pop(0)
+        if grid[pos[0]][pos[1]] == "E":
+            return steps
         for d in ((-1, 0), (1, 0), (0, -1), (0, 1)):
             new_pos = (pos[0] + d[0], pos[1] + d[1])
             if (
@@ -23,13 +25,14 @@ def bfs(grid: list[str], starts: list[tuple[int, int]]) -> int:
                 old_elev = "a"
             new_elev = grid[new_pos[0]][new_pos[1]]
             if new_elev == "E":
-                return steps + 1
+                new_elev = "z"
             if ord(new_elev) - ord(old_elev) <= 1:
                 visited.add(new_pos)
                 queue.append((steps + 1, new_pos))
 
 
 def solve(input: Optional[str]) -> Iterator[any]:
+    print(input)
     grid = input.split("\n")
     start_pos: Optional[tuple[int, int]] = None
     starts: list[tuple[int, int]] = []
