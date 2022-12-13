@@ -32,7 +32,6 @@ def bfs(grid: list[str], starts: list[tuple[int, int]]) -> int:
 
 
 def solve(input: Optional[str]) -> Iterator[any]:
-    print(input)
     grid = input.split("\n")
     start_pos: Optional[tuple[int, int]] = None
     starts: list[tuple[int, int]] = []
