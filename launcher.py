@@ -59,9 +59,9 @@ def retrieve_example(doc: bs4.BeautifulSoup) -> str:
     for keyword in keywords:
         match = doc.find(text=re.compile(keyword))
         if match is not None:
-            code = match.parent.find_next("code")
+            code = match.parent.next_sibling.find_next("code")
             if code is not None:
-                example = code.text.strip("\r\n")
+                example = code.text.rstrip()
                 break
 
     if example is None:
@@ -144,7 +144,7 @@ def retrieve_input(day: int, year: int) -> Optional[str]:
             file=sys.stderr,
         )
         return None
-    input = response.text.strip("\r\n")
+    input = response.text.rstrip()
 
     # Save the puzzle input to a file
     input_path.parent.mkdir(parents=True, exist_ok=True)
