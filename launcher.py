@@ -7,6 +7,7 @@ import bs4
 import clipboard
 import datetime
 import importlib
+import inspect
 import os
 import pathlib
 import re
@@ -15,7 +16,8 @@ import shutil
 import sys
 from multiprocessing import Process
 from termcolor import colored
-from typing import Optional
+from types import ModuleType
+from typing import Any, Callable, Optional
 
 
 SESSION = os.getenv("ADVENT_OF_CODE_SESSION")
@@ -154,6 +156,13 @@ def retrieve_input(day: int, year: int) -> Optional[str]:
     return input
 
 
+def run_solver(solver: ModuleType, input: str, is_example=False) -> Any:
+    if "is_example" in inspect.signature(solver.solve).parameters:
+        return solver.solve(input, is_example=is_example)
+    else:
+        return solver.solve(input)
+
+
 def submit(day: int, year: int, part: int, answer: any):
     """Submits the answer for a puzzle to https://adventofcode.com.
 
@@ -210,7 +219,7 @@ def run_example(solver, args):
     input = retrieve_example(doc)
 
     parts = set(args.part or [])
-    for part, answer in enumerate(solver.solve(input), 1):
+    for part, answer in enumerate(run_solver(solver, input, True), 1):
         if len(parts) == 0 or part in parts:
             check_example_answer(doc, str(answer), part)
 
@@ -299,7 +308,7 @@ def main():
 
     parts = set(args.part or [])
     last: Optional[tuple[int, any]] = None
-    for (part, answer) in enumerate(solver.solve(input), 1):
+    for (part, answer) in enumerate(run_solver(solver, input), 1):
         if len(parts) == 0 or part in parts:
             sep = "\n" if "\n" in str(answer) else " "
             print(f"Part {part} answer:{sep}{answer}")

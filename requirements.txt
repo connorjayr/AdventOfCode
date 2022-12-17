@@ -5,3 +5,4 @@ networkx
 python-dotenv
 requests
 termcolor
+z3-solver
